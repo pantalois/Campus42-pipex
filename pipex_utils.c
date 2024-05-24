@@ -6,47 +6,72 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 15:09:04 by loigonza          #+#    #+#             */
-/*   Updated: 2024/05/22 19:09:54 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/05/24 18:59:31 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-int check_write(char*argv[], char *split_res)
+int pipe_fork_creation()//que reciba argv desde la posicion donde se quedo en la funcion anterior
 {
-	if (argv[1]) 
-		if (access(split_res, W_OK) == 0)
-			return (0);
+	int pid;
+	int	fd[2];
+
+	if (pipe(fd) == -1)
+		//mensaje de error
+		return (0);
+	if (pid == -1)
+		return (0);
+	if (pid == 0)
+	{
+		//while argv[i]
+		//comprobar existencia
+		//fork
+		//ejecutar
+	}
+		return (0);
+	}
+	if (pid > 0)
+	{
+		//proceso padre)
+		return (0);
+	}
 	return (0);
 }
 int check_access(char *split_res[], char *argv[])
 {
 	int i;
+	int fd;
 
 	i = 0;
-	if (argv[1] && access(argv[1], W_OK) == -1)
-		//escribir error
-		//crear outfile vacio
-		perror("no hay permisos W_OK para el infile");
+
+	if (argv[1])
+		if ((fd = open(argv[1], O_RDONLY)) == -1)
+			perror("no hay permisos de lectura");
+			//escribir error
+			//crear outfile vacio
+			//si no tengo permiso obvio el siguiente comando y continua la ejecucion
 	while (argv[2] && split_res[i])
 	{
 		split_res[i] = ft_strjoin(split_res[i],"/");
-		printf("1. %s, punt: %p\n", split_res[i], split_res[i]);
 		split_res[i] = ft_strjoin(split_res[i], argv[2]);
-		printf("2. %s, punt: %p\n", split_res[i], split_res[i]);
+		//printf("2. %s, punt: %p\n", split_res[i], split_res[i]);
 		//printf("%s", split_res[i]);
-		if (split_res[i] && access(split_res[i], F_OK) == 0)
+		if (split_res[i] && access(split_res[i], F_OK | X_OK) == 0)
 		{
 			printf("--------------\n");
-			//llamar a la creacion de pipe 
+			//pipe_fork_creation(pasar argv desde la posicion en la que estoy)
 			return (0);
 		}
 		if (!split_res[i])
 		{
-			/*if (access()) /bin/ls comprobar si tiene accesso al argv,
-						si es asi return (0)*/
+			if (access(argv[i], F_OK | X_OK) == 0);
+			{
+				pipe_fork_creation(&argv[i]);	
+				return (0);
 			perror("INFILE COMMAND No existe en el PATH");
 			exit (127);
 		}
@@ -66,11 +91,8 @@ char **ft_getenv(char *env[], char *argv[])
 	j = 0;
 	while (env[i] != NULL)
 	{
-		if((ft_strncmp(env[i], "PATH=", 5)) == 0) //puede que no te lo pase
-		{
+		if((ft_strncmp(env[i], "PATH=", 5)) == 0)
 			env_path = env[i];
-			//printf("%s", env_path);
-		}
 		i++;
 	}
 	split_res = ft_split(&env_path[5], ':');
