@@ -6,12 +6,12 @@
 /*   By: loigonza <loigonza@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/15 17:27:49 by loigonza          #+#    #+#             */
-/*   Updated: 2024/02/05 15:24:14 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/03 20:44:08 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stddef.h>
 #include <stdio.h>
-#include <libc.h>
+//#include <libc.h>
 #include "libft.h"
 
 void	*ft_memmove(void *dst, const void *src, size_t n)

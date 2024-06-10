@@ -23,7 +23,7 @@ INCLUDE = pipex.h Makefile
 all: $(NAME)
 
 $(NAME): libft $(OBJ)
-		$(CC) $(CFLAGS) $(LIBFT) $(OBJ) -o $(NAME)
+		$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
 
 libft: 
 	$(LIBFT_MAKE)

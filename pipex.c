@@ -6,7 +6,7 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 18:07:09 by loigonza          #+#    #+#             */
-/*   Updated: 2024/05/24 18:54:27 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/08 16:37:47 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 
 int main(int argc, char *argv[], char *env[])
 {
-	int i;
+//	int i;
 
-	i = 1;
+//	i = 1;
     if (argc < 2)
 		return (0);
 	ft_getenv(env, argv);
