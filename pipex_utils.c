@@ -6,7 +6,7 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 15:09:04 by loigonza          #+#    #+#             */
-/*   Updated: 2024/06/08 17:15:37 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/11 16:21:58 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+/*
 char **create_command(char *argv[])//esta funcion me aisla el comando que quiero pasarle al execve en caso de que nos pasen la ruta absoluta y no el comando
 {
-	char **command = '\0';
+	char **command = NULL;
 	int	i;
 	int j;
 	int z;
@@ -43,26 +43,29 @@ char **create_command(char *argv[])//esta funcion me aisla el comando que quiero
 	printf("%s, %s", command[0], command[1]);
 	return (command);
 }
-
+*/
 int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])//que reciba argv desde la posicion donde se quedo en la funcion anterior
 {
 	int pid;//ver por que la variable pid_t no me la detcta.
 	int	fd[2];
-	char **path;
+	//char **path;
 	int j;
+	int z;
 
 	j = 0;
 	if (pipe(fd) == -1)
 		{//mensaje de error
 		return (0);
 		}
-	pid = fork();
+		pid = fork();//Pasarla a una funcion a parte de creacion de hijos
 	if (pid == -1)
 		return (0);
 	if (pid == 0)
 	{
+		z = getpid();
+		printf("pid == %d\n", z);
 		printf("PROCESO HIJO\n");
-		while (argv[j])
+		if (argv[j])
 		{
 		//comprobar existencia(EN VERDAD SI ESTAMOSAQUI YA HABRIAMOS COMPROBADO SU EXISTENCIA EN EL CHECK_ACCESS
 		//ejecutar
@@ -71,18 +74,36 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 				if (argv[j + 1])
 					argv[j + 1] = NULL;
 				printf("estamos ejecutando ls dentro del proceso hijo\n");
-				execve(*split_res, argv, env);
-				return (0);
+				if (execve(*split_res, argv, env) == -1)//proteger execve
+				{
+					printf("ENTRA EN EL CONTROL DE ERROR");
+					if (j == 1)//si es el primer proceso
+						exit (0);
+					if (j > 1)//si no es el primer proceso
+						exit (1);
+				//del execve nos salimos con exit, sino nos queda un hijo zombie
+				}
+				printf("pid == %d\n", z);
 			}
 			if (!bolean)
 			{
 				printf("entro aqui\n");
-				path = create_command(argv);
-				execve(*argv, path, env);//mirar el man para setear bien el tema de los retornos en caso de error con errno
+				//path = create_command(argv);
+				//printf("path[0] = %s\n", path[0]);
+				//printf("path[1] = %s\n", path[1]);
+				if (argv[j + 1])
+						argv[j + 1] = NULL;
+				if (execve(*argv, argv, env) == -1)//mirar el man para setear bien el tema de los retornos en caso de error con errno
+				{
+					if (j == 1)
+						exit (0);
+					if (j > 1)
+						exit (1);
+				}
+				printf("pid == %d\n", z);
 			}
-		j++;
 		}
-		
+		printf("pid == %d\n", z);
 	}
 	if (pid > 0)
 	{
@@ -97,22 +118,29 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 {
 	int i;
 	int fd;
+	int x;
 
+	x = 0;
 	i = 0;
+	while (argv[x + 1])
+		x++;
 	printf("EEE%sEEE\n", argv[j]);
 	printf("%d\n", j);
 	if (argv[j])
 	{
 		if ((fd = open(argv[j], O_RDONLY)) == -1)
-			printf("no hay permisos de lectura\n");
+		{			
+			printf("no hay permisos de lectura\n");//perror
+			fd = open(argv[x], O_CREAT | O_WRONLY | O_TRUNC, 0644);// flag de borrar y escribir y flag append para los bonuses
+			exit (1);
+		}
 		else
+		{
+			fd = open(argv[x], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			j++;
-			//perror("no hay permisos de lectura");
-			//escribir error
-			//crear outfile vacio
-			//si no tengo permiso obvio el siguiente comando y continua la ejecucion
+		}
 	}
-	while (split_res[i])
+	while (split_res[i] && argv[j])
 	{
 		split_res[i] = ft_strjoin(split_res[i],"/");
 		printf("%s\n", split_res[i]);
@@ -121,12 +149,14 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 		if (split_res[i] && access(split_res[i], F_OK | X_OK) == 0)
 		{
 			printf("--------------\n");
-			while (argv[j])
+			if (argv[j])
 			{
 				pipe_fork_creation(&argv[j], &split_res[i], 1, env); //pasamos la ruta del env y tambien le pasamos un bool en positivo
 				j++;
+				i = -1;
+				free(split_res);
+				//llamar a funcioin de split_res para splitear el enviroment que estara aparte.
 			}
-			return (0);
 		}
 		i++;
 	}
@@ -135,10 +165,13 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 			if (access(argv[j], F_OK | X_OK) == 0)
 			{
 				pipe_fork_creation(&argv[j], split_res,  0, env);//pasamos un bool negativo para dferenciar si pasar la ruta absoluta o pasar solo la	
-				return (0);//no se por que tengo este return (0) aqui.
+				j++;
 			}
+			else
+			{
 			perror("INFILE COMMAND No existe en el PATH");
 			exit (127);
+			}
 		}
 	return (1);
 }/*
