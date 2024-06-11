@@ -6,7 +6,7 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 15:09:04 by loigonza          #+#    #+#             */
-/*   Updated: 2024/06/11 16:21:58 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/11 17:56:12 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 
 	x = 0;
 	i = 0;
-	while (argv[x + 1])
+	while (argv[x + 1])//toda esta parte de crear el infile y el outfile sera otra funcion.
 		x++;
 	printf("EEE%sEEE\n", argv[j]);
 	printf("%d\n", j);
@@ -139,7 +139,7 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 			fd = open(argv[x], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			j++;
 		}
-	}
+	}//aqui se acaba la parte de crear el infile y el outfile.
 	while (split_res[i] && argv[j])
 	{
 		split_res[i] = ft_strjoin(split_res[i],"/");
@@ -154,7 +154,7 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 				pipe_fork_creation(&argv[j], &split_res[i], 1, env); //pasamos la ruta del env y tambien le pasamos un bool en positivo
 				j++;
 				i = -1;
-				free(split_res);
+				//free(split_res);
 				//llamar a funcioin de split_res para splitear el enviroment que estara aparte.
 			}
 		}
