@@ -6,7 +6,7 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 15:09:04 by loigonza          #+#    #+#             */
-/*   Updated: 2024/06/11 17:56:12 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/12 13:50:28 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 				if (argv[j + 1])
 					argv[j + 1] = NULL;
 				printf("estamos ejecutando ls dentro del proceso hijo\n");
+				//dup2 del primer comando al segundo y asi sucesivamente antes de ejecutar.
 				if (execve(*split_res, argv, env) == -1)//proteger execve
 				{
 					printf("ENTRA EN EL CONTROL DE ERROR");
@@ -82,6 +83,7 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 					if (j > 1)//si no es el primer proceso
 						exit (1);
 				//del execve nos salimos con exit, sino nos queda un hijo zombie
+				//cerrar el fd del comando anterior una vez ejecutado el proceso.
 				}
 				printf("pid == %d\n", z);
 			}
@@ -114,12 +116,11 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 	}
 	return (0);
 }
-int check_access(char *split_res[], char *argv[], char *env[], int j)
+int check_commands(char *split_res[], char *argv[], char *env[])
 {
-	int i;
-	int fd;
-	int x;
-
+//	int fd;
+//	int x;
+/*
 	x = 0;
 	i = 0;
 	while (argv[x + 1])//toda esta parte de crear el infile y el outfile sera otra funcion.
@@ -139,7 +140,15 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 			fd = open(argv[x], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			j++;
 		}
-	}//aqui se acaba la parte de crear el infile y el outfile.
+	}*///aqui se acaba la parte de crear el infile y el outfile.
+	
+	int i;
+	int j;
+	int x;
+	
+	i = 0;
+	j = 2;
+	x = 2;
 	while (split_res[i] && argv[j])
 	{
 		split_res[i] = ft_strjoin(split_res[i],"/");
@@ -154,11 +163,13 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 				pipe_fork_creation(&argv[j], &split_res[i], 1, env); //pasamos la ruta del env y tambien le pasamos un bool en positivo
 				j++;
 				i = -1;
-				//free(split_res);
+				free(split_res);
+				split_res = ft_getenv(env);
 				//llamar a funcioin de split_res para splitear el enviroment que estara aparte.
 			}
 		}
 		i++;
+		x++;
 	}
 		if (!split_res[i])
 		{
@@ -166,6 +177,8 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 			{
 				pipe_fork_creation(&argv[j], split_res,  0, env);//pasamos un bool negativo para dferenciar si pasar la ruta absoluta o pasar solo la	
 				j++;
+				free(split_res);
+				split_res = ft_getenv(env);
 			}
 			else
 			{
@@ -178,14 +191,15 @@ int check_access(char *split_res[], char *argv[], char *env[], int j)
 return (0);
 }*/
 
-char **ft_getenv(char *env[], char *argv[])
+char	**ft_getenv(char *env[])
 {
-	int i;
+	//int i;
 	int j;
 	char *env_path;
 	char **split_res;
+	//char **split_res;
 
-	i = 0;
+	//i = 0;
 	j = 0;
 	while (env[j] != NULL)
 	{
@@ -196,8 +210,23 @@ char **ft_getenv(char *env[], char *argv[])
 		}
 		j++;
 	}
+	printf("retornoretorno\n");
+	split_res = ft_split(&env_path[5], ':');
+	return (split_res);
+}
+
+	//hasta aqui la funcion de get enviroment
+	//de aqui para abajo la funcion de split enviroment.
+//char	**split_env(char *env_path, char *argv[], char *env[])
+/*char **split_env(char *env_path)
+{
+	char **split_res;
+//	int i;
+//	int j;
+
 	split_res = ft_split(&env_path[5], ':');
 	j = 0;
+	i = 0;
 	while (split_res[i])
 	{
 		printf("AAA%sAAA\n", argv[j]);
@@ -208,4 +237,34 @@ char **ft_getenv(char *env[], char *argv[])
 		j++;
 	}
 	return (split_res);
+}*/
+
+void check_in_out(char *argv[])
+{
+	int i;
+	int fd;
+	int x;
+	int j;
+
+	x = 0;
+	i = 0;
+	j = 1;
+	while (argv[x + 1])//toda esta parte de crear el infile y el outfile sera otra funcion.
+		x++;
+	printf("EEE%sEEE\n", argv[j]);
+	printf("%d\n", j);
+	if (argv[j])
+	{
+		if ((fd = open(argv[j], O_RDONLY)) == -1)
+		{			
+			printf("no hay permisos de lectura\n");//perror
+			fd = open(argv[x], O_CREAT | O_WRONLY | O_TRUNC, 0644);// flag de borrar y escribir y flag append para los bonuses
+			exit (1);
+		}
+		else
+		{
+			fd = open(argv[x], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+			j++;
+		}
+	}
 }

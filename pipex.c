@@ -6,7 +6,7 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 18:07:09 by loigonza          #+#    #+#             */
-/*   Updated: 2024/06/08 16:37:47 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/12 12:53:51 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,28 @@
 
 int main(int argc, char *argv[], char *env[])
 {
-//	int i;
+	int i;
 
-//	i = 1;
+	i = 0;
+	//char *env_path;
+	char **split_res;
+
     if (argc < 2)
 		return (0);
-	ft_getenv(env, argv);
+	/*env_path = */ft_getenv(env);
+	//printf("%s\n", env_path);
+	split_res = ft_getenv(env);
+	printf("ooooooooooooooooooooo\n");
+/*	
+	while (split_res[i])
+	{
+		printf("ZZZ%sZZZ\n", split_res[i]);
+		i++;
+	}
+*/
+	check_in_out(argv);
+	while (split_res[i])
+		check_commands(split_res, argv, env);
 	return (0);
 }
 
