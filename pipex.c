@@ -6,7 +6,7 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 18:07:09 by loigonza          #+#    #+#             */
-/*   Updated: 2024/06/12 12:53:51 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/13 17:53:39 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[], char *env[])
 
     if (argc < 2)
 		return (0);
-	/*env_path = */ft_getenv(env);
+	/*env_path = ft_getenv(env);*/
 	//printf("%s\n", env_path);
 	split_res = ft_getenv(env);
 	printf("ooooooooooooooooooooo\n");
@@ -35,9 +35,8 @@ int main(int argc, char *argv[], char *env[])
 		i++;
 	}
 */
-	check_in_out(argv);
-	while (split_res[i])
-		check_commands(split_res, argv, env);
+	//check_in_out(argv);//esto puedo hacerlo en la funcion de forks.
+	check_commands(split_res, argv, env);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 15:09:04 by loigonza          #+#    #+#             */
-/*   Updated: 2024/06/12 13:50:28 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/13 15:20:48 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,14 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 		{//mensaje de error
 		return (0);
 		}
+		printf("fd[0] de la pipe = %i\n", fd[0]);
+		printf("fd[1] de la pipe = %i\n", fd[1]);
 		pid = fork();//Pasarla a una funcion a parte de creacion de hijos
 	if (pid == -1)
 		return (0);
 	if (pid == 0)
 	{
+		check_in_out(argv);
 		z = getpid();
 		printf("pid == %d\n", z);
 		printf("PROCESO HIJO\n");
@@ -71,10 +74,11 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 		//ejecutar
 			if (bolean)//ejecuamos con la ruta siendo split_res
 			{
-				if (argv[j + 1])
+				if (argv[j + 1])//hacer split del comando
 					argv[j + 1] = NULL;
+				//ft_split_command
 				printf("estamos ejecutando ls dentro del proceso hijo\n");
-				//dup2 del primer comando al segundo y asi sucesivamente antes de ejecutar.
+				//dup2 de los file descriptors e ir cerrando antes de ejecutar.
 				if (execve(*split_res, argv, env) == -1)//proteger execve
 				{
 					printf("ENTRA EN EL CONTROL DE ERROR");
@@ -89,7 +93,7 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 			}
 			if (!bolean)
 			{
-				printf("entro aqui\n");
+				printf("ENTRA EN RUTA ABSOLUTA\n");
 				//path = create_command(argv);
 				//printf("path[0] = %s\n", path[0]);
 				//printf("path[1] = %s\n", path[1]);
@@ -102,10 +106,8 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 					if (j > 1)
 						exit (1);
 				}
-				printf("pid == %d\n", z);
 			}
 		}
-		printf("pid == %d\n", z);
 	}
 	if (pid > 0)
 	{
@@ -118,29 +120,6 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 }
 int check_commands(char *split_res[], char *argv[], char *env[])
 {
-//	int fd;
-//	int x;
-/*
-	x = 0;
-	i = 0;
-	while (argv[x + 1])//toda esta parte de crear el infile y el outfile sera otra funcion.
-		x++;
-	printf("EEE%sEEE\n", argv[j]);
-	printf("%d\n", j);
-	if (argv[j])
-	{
-		if ((fd = open(argv[j], O_RDONLY)) == -1)
-		{			
-			printf("no hay permisos de lectura\n");//perror
-			fd = open(argv[x], O_CREAT | O_WRONLY | O_TRUNC, 0644);// flag de borrar y escribir y flag append para los bonuses
-			exit (1);
-		}
-		else
-		{
-			fd = open(argv[x], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-			j++;
-		}
-	}*///aqui se acaba la parte de crear el infile y el outfile.
 	
 	int i;
 	int j;
@@ -155,7 +134,7 @@ int check_commands(char *split_res[], char *argv[], char *env[])
 		printf("%s\n", split_res[i]);
 		split_res[i] = ft_strjoin(split_res[i], argv[j]);
 		printf("%s\n", split_res[i]);
-		if (split_res[i] && access(split_res[i], F_OK | X_OK) == 0)
+		//if (split_res[i] && access(split_res[i], F_OK | X_OK) == 0)// tendremos que comprobar que podamos ejecutar el comando en el execve
 		{
 			printf("--------------\n");
 			if (argv[j])
@@ -171,7 +150,7 @@ int check_commands(char *split_res[], char *argv[], char *env[])
 		i++;
 		x++;
 	}
-		if (!split_res[i])
+		if (!split_res[i])//en lugar de llegar al final decirle que si la primera posicion es una '/' que me lo tome como una ruta absoluta
 		{
 			if (access(argv[j], F_OK | X_OK) == 0)
 			{
@@ -239,7 +218,7 @@ char	**ft_getenv(char *env[])
 	return (split_res);
 }*/
 
-void check_in_out(char *argv[])
+int check_in_out(char *argv[])
 {
 	int i;
 	int fd;
@@ -249,6 +228,7 @@ void check_in_out(char *argv[])
 	x = 0;
 	i = 0;
 	j = 1;
+	fd = 0;
 	while (argv[x + 1])//toda esta parte de crear el infile y el outfile sera otra funcion.
 		x++;
 	printf("EEE%sEEE\n", argv[j]);
@@ -267,4 +247,5 @@ void check_in_out(char *argv[])
 			j++;
 		}
 	}
+	return (fd);
 }
