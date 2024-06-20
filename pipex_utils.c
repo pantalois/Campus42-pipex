@@ -6,7 +6,7 @@
 /*   By: loigonza <loigonza@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 15:09:04 by loigonza          #+#    #+#             */
-/*   Updated: 2024/06/13 15:20:48 by loigonza         ###   ########.fr       */
+/*   Updated: 2024/06/18 11:34:35 by loigonza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int pipe_fork_creation(char *argv[], char *split_res[], int bolean, char *env[])
 	}
 	return (0);
 }
-int check_commands(char *split_res[], char *argv[], char *env[])
+icnt check_commands(char *split_res[], char *argv[], char *env[])
 {
 	
 	int i;
